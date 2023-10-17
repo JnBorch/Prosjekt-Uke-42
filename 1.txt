@@ -1,54 +1,46 @@
-const int button1 = 2; // Pin for button 1
-const int button2 = 3; // Pin for button 2
-const int led1 = 9;    // Pin for LED 1
-const int led2 = 8;    // Pin for LED 2
-const int buzzer = 10;  // Pin for the buzzer
+const int button1 = 2; 
+const int button2 = 3; 
+const int led1 = 9;    
+const int led2 = 8;    
+const int buzzer = 10;  
 
-unsigned long buzzerTime;     // Time of the previous buzzer sound
-unsigned long randomInterval; // Random time before the buzzer sound
-int player1Score = 0;         // Player 1 score
-int player2Score = 0;         // Player 2 score
+int player1Score = 0;         
+int player2Score = 0;         
 
 void setup() {
-  pinMode(button1, INPUT_PULLUP); // Configure button 1 as INPUT with pull-up resistor
-  pinMode(button2, INPUT_PULLUP); // Configure button 2 as INPUT with pull-up resistor
-  pinMode(led1, OUTPUT);  // Configure LED 1 as OUTPUT
-  pinMode(led2, OUTPUT);  // Configure LED 2 as OUTPUT
-  pinMode(buzzer, OUTPUT); // Configure the buzzer as OUTPUT
-
-  randomInterval = random(1000, 3000);  // Generate a random time before the buzzer sound (1-10 seconds)
-  buzzerTime = millis() + randomInterval; // Set the time for the previous buzzer sound
+  Serial.begin(9600);
+  pinMode(button1, INPUT); 
+  pinMode(button2, INPUT); 
+  pinMode(led1, OUTPUT);  
+  pinMode(led2, OUTPUT);  
+  pinMode(buzzer, OUTPUT); 
 }
 
 void loop() {
-  unsigned long currentTime = millis(); // Get the current time
-  randomInterval = random(1000, 3000);  // Generate a new random time before the next buzzer sound
-  buzzerTime = currentTime + randomInterval; // Update the time for the next buzzer sound
+  long currentTime = millis(); // Get the current time
+  long randomInterval = random(1000, 10000);  // Generate a new random time before the next buzzer sound
+  long buzzerTime = currentTime + randomInterval; // Update the time for the next buzzer sound
   bool start = true;
   
   while (start) {
-    if (currentTime >= buzzerTime) {
-      // The buzzer should sound now
-      tone(buzzer, 500); // Turn on the buzzer for 500 hz
-
-      // Check which button was pressed first
-      if (digitalRead(button1) == LOW) {
-        // Player 1 pressed button 1 first
-        player1Score++;            // Increase player 1's score
-        digitalWrite(led1, HIGH);  // Turn on LED 1 to indicate points
-        delay(500);                // Wait for 500 ms
-        digitalWrite(led1, LOW);   // Turn off LED 1
-        Serial.println("Player 1 Score: " + String(player1Score));
-        noTone(buzzer);            // Turn off the buzzer
+    if (millis() >= buzzerTime) {
+      tone(buzzer, 500); 
+      if (digitalRead(button1) == HIGH) {
+        player1Score++;            
+        digitalWrite(led1, HIGH);  
+        delay(500);               
+        digitalWrite(led1, LOW);   
+        Serial.println("Player 1: " + String(player1Score) + " | Player 2: " + String(player2Score));
+        noTone(buzzer);            
         start = false;
-      } else if (digitalRead(button2) == LOW) {
+      } else if (digitalRead(button2) == HIGH) {
         // Player 2 pressed button 2 first
-        player2Score++;            // Increase player 2's score
-        digitalWrite(led2, HIGH);  // Turn on LED 2 to indicate points
-        delay(500);                // Wait for 500 ms
-        digitalWrite(led2, LOW);   // Turn off LED 2
-        Serial.println("Player 2 Score: " + String(player2Score));
-        noTone(buzzer);            // Turn off the buzzer
+        player2Score++;            
+        digitalWrite(led2, HIGH);  
+        delay(500);               
+        digitalWrite(led2, LOW);   
+        Serial.println("Player 1: " + String(player1Score) + " | Player 2: " + String(player2Score));
+        noTone(buzzer);            
         start = false;
       }
     }
