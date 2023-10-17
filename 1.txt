@@ -1,0 +1,50 @@
+const int button1 = 2;   // Pin for knapp 1
+const int button2 = 3;   // Pin for knapp 2
+const int led1 = 4;      // Pin for LED 1
+const int led2 = 5;      // Pin for LED 2
+const int buzzer = 6;    // Pin for buzzer
+
+void setup() {
+  pinMode(button1, INPUT_PULLUP); // Konfigurer knapp 1 som en INPUT med pull-up motstand
+  pinMode(button2, INPUT_PULLUP); // Konfigurer knapp 2 som en INPUT med pull-up motstand
+  pinMode(led1, OUTPUT);          // Konfigurer LED 1 som en OUTPUT
+  pinMode(led2, OUTPUT);          // Konfigurer LED 2 som en OUTPUT
+  pinMode(buzzer, OUTPUT);        // Konfigurer buzzer som en OUTPUT
+
+  randomInterval = random(10000, 30000);  // Generer en tilfeldig tid før buzzer-lyd (10-30 sekunder)
+  buzzerTime = millis() + randomInterval; // Sett tidspunktet for forrige buzzer-lyd
+}
+
+void loop() {
+	int player1Score = 0;         // Spiller 1-poeng
+	int player2Score = 0;         // Spiller 2-poeng
+	unsigned long buzzerTime;     // Tidspunkt for forrige buzzer-lyd
+	unsigned long randomInterval; // Tilfeldig tid før buzzer-lyd
+  unsigned long currentTime = millis(); // Hent gjeldende tid
+
+  if (currentTime >= buzzerTime) {
+    // Buzzeren skal pipe nå
+    tone(buzzer, 1000, 500);               // Slå på buzzeren i 1 sekund med 500 frekvens
+    delay(1000);                            // Lytt etter knappetrykk i 1000 ms
+    randomInterval = random(10000, 30000); // Generer en ny tilfeldig tid før neste buzzer-lyd
+    buzzerTime = currentTime + randomInterval; // Oppdater tidspunktet for neste buzzer-lyd
+  }
+
+  // Sjekk om knapp 1 er trykket
+  if (digitalRead(button1) == LOW) {
+    // Spiller 1 har trykket knapp 1
+    player1Score++;           // Øk poengsummen for spiller 1
+    digitalWrite(led1, HIGH); // Slå på LED ved knapp 1 for å indikere poeng
+    delay(500);               // Vent i 500 ms
+    digitalWrite(led1, LOW);  // Slå av LED ved knapp 1
+  }
+
+  // Sjekk om knapp 2 er trykket
+  if (digitalRead(button2) == LOW) {
+    // Spiller 2 har trykket knapp 2
+    player2Score++;           // Øk poengsummen for spiller 2
+    digitalWrite(led2, HIGH); // Slå på LED ved knapp 2 for å indikere poeng
+    delay(500);               // Vent i 500 ms
+    digitalWrite(led2, LOW);  // Slå av LED ved knapp 2
+  }
+}
