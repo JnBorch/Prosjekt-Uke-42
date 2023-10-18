@@ -1,28 +1,59 @@
 const int button1 = 2; 
 const int button2 = 3; 
-const int led1 = 9;    
-const int led2 = 8;    
+const int button3 = 18;
+const int led1 = 8;    
+const int led2 = 9;    
 const int buzzerpin = 10;  
 
 int player1Score = 0;         
 int player2Score = 0; 
 
-enum game_states{reset, countdown, buzzeron}; 
+const int a1 = 24;  const int a2 = 25;
+const int b1 = 26;  const int b2 = 27;
+const int C1 = 28;  const int C2 = 29;
+const int D1 = 30;  const int D2 = 31;
+const int E1 = 32;  const int E2 = 33;
+const int F1 = 34;  const int F2 = 35;
+const int G1 = 36;  const int G2 = 37;
+const int DP1 = 38; const int DP2 = 39;
+
+enum game_states{reset, countdown, buzzeron, gameend}; 
 	game_states states = reset;      
 
 void setup() {
   Serial.begin(9600);
   pinMode(button1, INPUT); 
   pinMode(button2, INPUT); 
+  pinMode(button3, INPUT);
   pinMode(led1, OUTPUT);  
   pinMode(led2, OUTPUT);  
   pinMode(buzzerpin, OUTPUT); 
 
 	attachInterrupt(digitalPinToInterrupt(button1), player1, RISING);
 	attachInterrupt(digitalPinToInterrupt(button2), player2, RISING);
+  attachInterrupt(digitalPinToInterrupt(button3), gamerestart, RISING);
+
+  pinMode(a1, OUTPUT);
+  pinMode(a2, OUTPUT);
+  pinMode(b1, OUTPUT);
+  pinMode(b2, OUTPUT);
+  pinMode(C1, OUTPUT);
+  pinMode(C2, OUTPUT);
+  pinMode(D1, OUTPUT);
+  pinMode(D2, OUTPUT);
+  pinMode(E1, OUTPUT);
+  pinMode(E2, OUTPUT);
+  pinMode(F1, OUTPUT);
+  pinMode(F2, OUTPUT);
+  pinMode(G1, OUTPUT);
+  pinMode(G2, OUTPUT);
+  pinMode(DP1, OUTPUT);
+  pinMode(DP2, OUTPUT);
 }
 
 void loop(){
+  Seven_LED1();
+  Seven_LED2();
 	switch(states){
 		case(reset):
 			noTone(buzzerpin);
@@ -36,6 +67,9 @@ void loop(){
 		case(buzzeron):
 			tone(buzzerpin, 500);
 		break;
+    case(gameend):
+      noTone(buzzerpin);
+    break;
 	}
 }
 
@@ -51,10 +85,14 @@ void player1(){
 		states = reset;
 		++player1Score;
 		digitalWrite(led1, HIGH);
-		delay(500);
+		delay(1000);
 		digitalWrite(led1, LOW);
 		Serial.println("Player 1: " + String(player1Score) + " | Player 2: " + String(player2Score));    
 	}
+  if(player1Score == 5){
+    states = gameend;
+    Serial.println("Player1 has WON");
+  }
 }
 
 void player2(){
@@ -69,12 +107,146 @@ void player2(){
 		states = reset;
 		++player2Score;
 		digitalWrite(led2, HIGH);
-		delay(500);
+		delay(1000);
 		digitalWrite(led2, LOW);
 		Serial.println("Player 1: " + String(player1Score) + " | Player 2: " + String(player2Score));
 	}
+  if(player2Score == 5){
+    states = gameend;
+    Serial.println("Player2 has WON");
+  }
 }
 
-void Seven_LED(){
-	
+void gamerestart(){
+  if(states == gameend){
+    states = reset;
+    player1Score = 0;
+    player2Score = 0;
+  }
+}
+
+void Seven_LED1(){
+  if(player1Score == 0){
+    digitalWrite(a1, HIGH);
+    digitalWrite(b1, HIGH);
+    digitalWrite(C1, HIGH);
+    digitalWrite(D1, HIGH);
+    digitalWrite(E1, HIGH);
+    digitalWrite(F1, HIGH);
+    digitalWrite(G1, LOW);
+    digitalWrite(DP1, HIGH);
+  }
+  if(player1Score == 1){
+    digitalWrite(a1, LOW);
+    digitalWrite(b1, HIGH);
+    digitalWrite(C1, HIGH);
+    digitalWrite(D1, LOW);
+    digitalWrite(E1, LOW);
+    digitalWrite(F1, LOW);
+    digitalWrite(G1, LOW);
+    digitalWrite(DP1, HIGH);
+  }
+  if(player1Score == 2){
+    digitalWrite(a1, HIGH);
+    digitalWrite(b1, HIGH);
+    digitalWrite(C1, LOW);
+    digitalWrite(D1, HIGH);
+    digitalWrite(E1, HIGH);
+    digitalWrite(F1, LOW);
+    digitalWrite(G1, HIGH);
+    digitalWrite(DP1, HIGH);
+  }
+  if(player1Score == 3){
+    digitalWrite(a1, HIGH);
+    digitalWrite(b1, HIGH);
+    digitalWrite(C1, HIGH);
+    digitalWrite(D1, HIGH);
+    digitalWrite(E1, LOW);
+    digitalWrite(F1, LOW);
+    digitalWrite(G1, HIGH);
+    digitalWrite(DP1, HIGH);
+  }
+  if(player1Score == 4){
+    digitalWrite(a1, LOW);
+    digitalWrite(b1, HIGH);
+    digitalWrite(C1, HIGH);
+    digitalWrite(D1, LOW);
+    digitalWrite(E1, LOW);
+    digitalWrite(F1, HIGH);
+    digitalWrite(G1, HIGH);
+    digitalWrite(DP1, HIGH);
+  }
+  if(player1Score == 5){
+    digitalWrite(a1, HIGH);
+    digitalWrite(b1, LOW);
+    digitalWrite(C1, HIGH);
+    digitalWrite(D1, HIGH);
+    digitalWrite(E1, LOW);
+    digitalWrite(F1, HIGH);
+    digitalWrite(G1, HIGH);
+    digitalWrite(DP1, HIGH);
+  }
+}
+
+void Seven_LED2(){
+  if(player2Score == 0){
+    digitalWrite(a2, HIGH);
+    digitalWrite(b2, HIGH);
+    digitalWrite(C2, HIGH);
+    digitalWrite(D2, HIGH);
+    digitalWrite(E2, HIGH);
+    digitalWrite(F2, HIGH);
+    digitalWrite(G2, LOW);
+    digitalWrite(DP2, HIGH);
+  }
+  if(player2Score == 1){
+    digitalWrite(a2, LOW);
+    digitalWrite(b2, HIGH);
+    digitalWrite(C2, HIGH);
+    digitalWrite(D2, LOW);
+    digitalWrite(E2, LOW);
+    digitalWrite(F2, LOW);
+    digitalWrite(G2, LOW);
+    digitalWrite(DP2, HIGH);
+  }
+  if(player2Score == 2){
+    digitalWrite(a2, HIGH);
+    digitalWrite(b2, HIGH);
+    digitalWrite(C2, LOW);
+    digitalWrite(D2, HIGH);
+    digitalWrite(E2, HIGH);
+    digitalWrite(F2, LOW);
+    digitalWrite(G2, HIGH);
+    digitalWrite(DP2, HIGH);
+  }
+  if(player2Score == 3){
+    digitalWrite(a2, HIGH);
+    digitalWrite(b2, HIGH);
+    digitalWrite(C2, HIGH);
+    digitalWrite(D2, HIGH);
+    digitalWrite(E2, LOW);
+    digitalWrite(F2, LOW);
+    digitalWrite(G2, HIGH);
+    digitalWrite(DP2, HIGH);
+  }
+  if(player2Score == 4){
+    digitalWrite(a2, LOW);
+    digitalWrite(b2, HIGH);
+    digitalWrite(C2, HIGH);
+    digitalWrite(D2, LOW);
+    digitalWrite(E2, LOW);
+    digitalWrite(F2, HIGH);
+    digitalWrite(G2, HIGH);
+    digitalWrite(DP2, HIGH);
+  }
+  if(player2Score == 5){
+    digitalWrite(a2, HIGH);
+    digitalWrite(b2, LOW);
+    digitalWrite(C2, HIGH);
+    digitalWrite(D2, HIGH);
+    digitalWrite(E2, LOW);
+    digitalWrite(F2, HIGH);
+    digitalWrite(G2, HIGH);
+    digitalWrite(DP2, HIGH);
+  }
 }
