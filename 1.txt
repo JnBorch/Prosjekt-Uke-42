@@ -2,10 +2,13 @@ const int button1 = 2;
 const int button2 = 3; 
 const int led1 = 9;    
 const int led2 = 8;    
-const int buzzer = 10;  
+const int buzzerpin = 10;  
 
 int player1Score = 0;         
-int player2Score = 0;         
+int player2Score = 0; 
+
+enum game_states{reset, countdown, buzzeron}; 
+	game_states states = reset;      
 
 void setup() {
   Serial.begin(9600);
@@ -13,36 +16,65 @@ void setup() {
   pinMode(button2, INPUT); 
   pinMode(led1, OUTPUT);  
   pinMode(led2, OUTPUT);  
-  pinMode(buzzer, OUTPUT); 
+  pinMode(buzzerpin, OUTPUT); 
+
+	attachInterrupt(digitalPinToInterrupt(button1), player1, RISING);
+	attachInterrupt(digitalPinToInterrupt(button2), player2, RISING);
 }
 
-void loop() {
-  long currentTime = millis(); // Get the current time
-  long randomInterval = random(1000, 10000);  // Generate a new random time before the next buzzer sound
-  long buzzerTime = currentTime + randomInterval; // Update the time for the next buzzer sound
-  bool start = true;
-  
-  while (start) {
-    if (millis() >= buzzerTime) {
-      tone(buzzer, 500); 
-      if (digitalRead(button1) == HIGH) {
-        player1Score++;            
-        digitalWrite(led1, HIGH);  
-        delay(500);               
-        digitalWrite(led1, LOW);   
-        Serial.println("Player 1: " + String(player1Score) + " | Player 2: " + String(player2Score));
-        noTone(buzzer);            
-        start = false;
-      } else if (digitalRead(button2) == HIGH) {
-        // Player 2 pressed button 2 first
-        player2Score++;            
-        digitalWrite(led2, HIGH);  
-        delay(500);               
-        digitalWrite(led2, LOW);   
-        Serial.println("Player 1: " + String(player1Score) + " | Player 2: " + String(player2Score));
-        noTone(buzzer);            
-        start = false;
-      }
-    }
-  }
+void loop(){
+	switch(states){
+		case(reset):
+			noTone(buzzerpin);
+			delay(1000);
+			states = countdown;
+		break;
+		case(countdown):
+			delay(random(1000, 3000));
+			states = buzzeron;
+		break;
+		case(buzzeron):
+			tone(buzzerpin, 500);
+		break;
+	}
+}
+
+void player1(){
+	if(states == reset){
+	}
+	if(states == countdown && player1Score > 0){
+		--player1Score;
+		Serial.println("Player1 has been penalized");
+		states = reset;
+	}
+	if(states == buzzeron){
+		states = reset;
+		++player1Score;
+		digitalWrite(led1, HIGH);
+		delay(500);
+		digitalWrite(led1, LOW);
+		Serial.println("Player 1: " + String(player1Score) + " | Player 2: " + String(player2Score));    
+	}
+}
+
+void player2(){
+	if(states == reset){
+	}
+	if(states == countdown && player2Score > 0){
+		--player2Score;
+		Serial.println("Player2 has been penalized");
+		states = reset;
+	}
+	if(states == buzzeron){
+		states = reset;
+		++player2Score;
+		digitalWrite(led2, HIGH);
+		delay(500);
+		digitalWrite(led2, LOW);
+		Serial.println("Player 1: " + String(player1Score) + " | Player 2: " + String(player2Score));
+	}
+}
+
+void Seven_LED(){
+	
 }
